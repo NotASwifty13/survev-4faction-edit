@@ -15,7 +15,7 @@ export const PerkProperties = {
         scale: -0.25,
     },
     splinter: {
-        mainDamageMulti: 0.6,
+        mainDamageMulti: 0.7,
         splitsDamageMulti: 0.45,
     },
     trick_size: {
