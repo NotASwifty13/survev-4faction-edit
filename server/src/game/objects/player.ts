@@ -627,7 +627,7 @@ export class Player extends BaseGameObject {
         this.setDirty();
     }
 
-    /** "backpack00" is no backpack, "backpack03" is the max level backpack */
+    /** "backpack00" is no backpack, "backpack04" is the max level backpack */
     backpack: string;
     /** "" is no helmet, "helmet03" is the max level helmet */
     helmet: string;
