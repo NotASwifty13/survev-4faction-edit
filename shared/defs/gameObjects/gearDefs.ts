@@ -298,6 +298,23 @@ const BackpackDefs: Record<string, BackpackDef> = {
             pickup: "pack_pickup_01",
         },
     },
+        backpack04: {
+        name: "Military Pack",
+        type: "backpack",
+        level: 4,
+        tint: 6710835,
+        playerRad: 1,
+        lootImg: {
+            sprite: "loot-pack-03.img",
+            tint: 0xffffff,
+            border: "loot-circle-outer-01.img",
+            borderTint: 0,
+            scale: 0.2,
+        },
+        sound: {
+            pickup: "pack_pickup_01",
+        },
+    },
 };
 
 export interface BoostDef {
