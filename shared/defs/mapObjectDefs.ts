@@ -8852,7 +8852,9 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     crate_02f: createCrate({
         health: 140,
         loot: [
-            tierLoot("tier_guns", 3, 3),
+            tierLoot("tier_guns", 3, 3, {
+                preloadGuns: true
+            }),
             tierLoot("tier_armor", 2, 2),
             tierLoot("tier_packs", 1, 1),
         ],
@@ -9294,7 +9296,9 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     crate_22: createCrate({
         health: 140,
         loot: [
-            tierLoot("tier_guns", 3, 3),
+            tierLoot("tier_guns", 3, 3, {
+                preloadGuns: true,
+            }),
             tierLoot("tier_armor", 2, 2),
             tierLoot("tier_packs", 1, 1),
         ],
