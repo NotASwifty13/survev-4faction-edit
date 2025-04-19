@@ -353,6 +353,14 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             path: "audio/guns/usas_switch_01.mp3",
             volume: 1,
         },
+        aa12_01: {
+            path: "audio/guns/aa12_01.mp3",
+            volume: 0.7,
+        },
+        aa12_reload_01: {
+            path: "audio/guns/aa12_reload_01.mp3",
+            volume: 1,
+        },
         m1100_01: {
             path: "audio/guns/m1100_01.mp3",
             volume: 1,
@@ -517,6 +525,19 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
         },
         vss_switch_01: {
             path: "audio/guns/vss_switch_01.mp3",
+            volume: 1,
+        },
+        asval_01: {
+            path: "audio/guns/asval_01.mp3",
+            volume: 0.3,
+            maxInstances: 5,
+        },
+        asval_reload_01: {
+            path: "audio/guns/asval_reload_01.mp3",
+            volume: 2,
+        },
+        asval_switch_01: {
+            path: "audio/guns/asval_switch_01.mp3",
             volume: 1,
         },
         famas_01: {
