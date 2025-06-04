@@ -230,6 +230,7 @@ export class Obstacle extends BaseGameObject {
                     dir: v2.create(0, 0),
                     // obstacles that can kill themselves are airdrops being opened ig
                     damageType: GameConfig.DamageType.Airdrop,
+                    source: this.interactedBy,
                 });
             }
         }
@@ -435,6 +436,18 @@ export class Obstacle extends BaseGameObject {
             });
         }
 
+        if (
+            params.source?.__type === ObjectType.Player &&
+            params.source.hasPerk("scavenger_adv")
+        ) {
+            loot.push({
+                tier: "tier_scavenger_adv",
+                min: 1,
+                max: 1,
+                props: {},
+            });
+        }
+
         for (const lootTierOrItem of loot) {
             if ("tier" in lootTierOrItem) {
                 const count = util.randomInt(lootTierOrItem.min!, lootTierOrItem.max!);
@@ -484,7 +497,7 @@ export class Obstacle extends BaseGameObject {
         this.parentBuilding?.obstacleDestroyed(this);
 
         if (this.isWall) {
-            const objs = this.game.grid.intersectCollider(this.collider);
+            const objs = this.game.grid.intersectGameObject(this);
 
             for (let i = 0; i < objs.length; i++) {
                 const obj = objs[i];
@@ -538,7 +551,7 @@ export class Obstacle extends BaseGameObject {
 
     unlock(): void {
         this.interact(undefined, true);
-        this.game.playerBarn.addEmote(0, this.pos, "ping_unlock", true);
+        this.game.playerBarn.addMapPing("ping_unlock", this.pos);
     }
 
     useButton(): void {

@@ -1,40 +1,14 @@
 import $ from "jquery";
 import { MapDefs } from "../../shared/defs/mapDefs";
-import { TeamMode } from "../../shared/gameConfig";
+import { TeamModeToString } from "../../shared/defs/types/misc";
+import type { Info } from "../../shared/types/api";
 import { api } from "./api";
 import type { ConfigManager } from "./config";
 import { device } from "./device";
 import type { Localization } from "./ui/localization";
 
-interface Info {
-    country: string;
-    gitRevision: string;
-    modes: Array<{
-        mapName: string;
-        teamMode: TeamMode;
-        enabled: boolean;
-    }>;
-    pops: Record<
-        string,
-        {
-            playerCount: string;
-            l10n: string;
-        }
-    >;
-    youtube: {
-        name: string;
-        link: string;
-    };
-    twitch: Array<{
-        name: string;
-        viewers: number;
-        url: string;
-        img: string;
-    }>;
-}
-
 export class SiteInfo {
-    info: Info = {} as Info;
+    info = {} as Info;
     loaded = false;
 
     constructor(
@@ -60,7 +34,7 @@ export class SiteInfo {
             teamSelector.append(elm);
         }
 
-        $.ajax(siteInfoUrl).done((data, _status) => {
+        $.ajax(siteInfoUrl).done((data: Info) => {
             this.info = data || {};
             this.loaded = true;
             this.updatePageFromInfo();
@@ -68,12 +42,6 @@ export class SiteInfo {
     }
 
     getGameModeStyles() {
-        const modeTypes = {
-            [TeamMode.Solo]: "solo",
-            [TeamMode.Duo]: "duo",
-            [TeamMode.Squad]: "squad",
-        };
-
         const availableModes = [];
         const modes = this.info.modes || [];
         for (let i = 0; i < modes.length; i++) {
@@ -82,7 +50,7 @@ export class SiteInfo {
                 .desc;
             const buttonText = mapDef.buttonText
                 ? mapDef.buttonText
-                : modeTypes[mode.teamMode];
+                : TeamModeToString[mode.teamMode];
             availableModes.push({
                 icon: mapDef.icon,
                 buttonCss: mapDef.buttonCss,
@@ -126,10 +94,10 @@ export class SiteInfo {
                     }
                 }
 
-                if (!style.enabled) {
-                    btn.addClass("btn-disabled-main");
-                }
+                btn.toggle(style.enabled);
             }
+            const supportsTeam = this.info.modes.some((s) => s.enabled && s.teamMode > 1);
+            $("#btn-join-team, #btn-create-team").toggle(supportsTeam);
 
             // Region pops
             const pops = this.info.pops;

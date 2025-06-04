@@ -129,6 +129,11 @@ export class WeaponManager {
                 curWeapon.cooldown > 0
             ) {
                 effectiveSwitchDelay = nextWeaponDef.switchDelay;
+            } else if (nextWeaponDef.type === "melee") {
+                effectiveSwitchDelay = math.max(
+                    nextWeapon.cooldown,
+                    nextWeaponDef.switchDelay,
+                );
             }
 
             nextWeapon.cooldown = effectiveSwitchDelay;
@@ -190,6 +195,9 @@ export class WeaponManager {
         this.weapons[idx].ammo = ammo;
         if (weaponDef?.type === "gun") {
             this.weapons[idx].recoilTime = weaponDef.recoilTime;
+        }
+        if (weaponDef && "switchDelay" in weaponDef) {
+            this.weapons[idx].cooldown = weaponDef.switchDelay;
         }
 
         if (idx === this.curWeapIdx) {
@@ -340,14 +348,17 @@ export class WeaponManager {
         const itemDef = GameObjectDefs[this.activeWeapon] as MeleeDef;
         const player = this.player;
         const attack = itemDef.attack;
+        const weapon = this.weapons[this.curWeapIdx];
 
         if (
             player.animType !== GameConfig.Anim.Melee &&
-            (player.shootStart || (player.shootHold && itemDef.autoAttack))
+            (player.shootStart || (player.shootHold && itemDef.autoAttack)) &&
+            weapon.cooldown < 0
         ) {
             this.player.cancelAction();
 
             this.player.playAnim(GameConfig.Anim.Melee, attack.cooldownTime);
+            weapon.cooldown = attack.cooldownTime;
             this.meleeAttacks = [...attack.damageTimes];
         }
 
@@ -437,10 +448,11 @@ export class WeaponManager {
     /**
      * called when reload action completed, actually updates all state variables
      */
-    reload(): void {
-        const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
+    reload(curWeapIdx = this.curWeapIdx): void {
+        const weapon = this.weapons[curWeapIdx];
+        const weaponDef = GameObjectDefs[weapon.type] as GunDef;
         const trueAmmoStats = this.getTrueAmmoStats(weaponDef);
-        const activeWeaponAmmo = this.weapons[this.curWeapIdx].ammo;
+        const activeWeaponAmmo = weapon.ammo;
         const spaceLeft = trueAmmoStats.trueMaxClip - activeWeaponAmmo; // if gun is 27/30 ammo, spaceLeft = 3
 
         const inv = this.player.inventory;
@@ -451,41 +463,30 @@ export class WeaponManager {
         }
 
         if (this.isInfinite(weaponDef)) {
-            this.weapons[this.curWeapIdx].ammo += math.clamp(
-                amountToReload,
-                0,
-                spaceLeft,
-            );
+            weapon.ammo += math.clamp(amountToReload, 0, spaceLeft);
         } else if (inv[weaponDef.ammo] < spaceLeft) {
             // 27/30, inv = 2
             if (trueAmmoStats.trueMaxClip != amountToReload) {
                 // m870, mosin, spas: only refill by one bullet at a time
-                this.weapons[this.curWeapIdx].ammo++;
+                weapon.ammo++;
                 inv[weaponDef.ammo]--;
             } else {
                 // mp5, sv98, ak47: refill to as much as you have left in your inventory
-                this.weapons[this.curWeapIdx].ammo += inv[weaponDef.ammo];
+                weapon.ammo += inv[weaponDef.ammo];
                 inv[weaponDef.ammo] = 0;
             }
         } else {
             // 27/30, inv = 100
-            this.weapons[this.curWeapIdx].ammo += math.clamp(
-                amountToReload,
-                0,
-                spaceLeft,
-            );
+            weapon.ammo += math.clamp(amountToReload, 0, spaceLeft);
             inv[weaponDef.ammo] -= math.clamp(amountToReload, 0, spaceLeft);
         }
 
         // if you have an m870 with 2 ammo loaded and 0 ammo left in your inventory, your actual max clip is just 2 since you cant load anymore ammo
         const realMaxClip =
             inv[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef)
-                ? this.weapons[this.curWeapIdx].ammo
+                ? weapon.ammo
                 : trueAmmoStats.trueMaxClip;
-        if (
-            trueAmmoStats.trueMaxClip != amountToReload &&
-            this.weapons[this.curWeapIdx].ammo != realMaxClip
-        ) {
+        if (trueAmmoStats.trueMaxClip != amountToReload && weapon.ammo != realMaxClip) {
             this.player.reloadAgain = true;
         }
 

@@ -36,6 +36,7 @@ import { ShotBarn } from "./objects/shot";
 import { SmokeBarn } from "./objects/smoke";
 import { Renderer } from "./renderer";
 import type { ResourceManager } from "./resources";
+import { SDK } from "./sdk";
 import type { Localization } from "./ui/localization";
 import { Touch } from "./ui/touch";
 import { UiManager } from "./ui/ui";
@@ -175,7 +176,6 @@ export class Game {
                     joinMessage.isMobile = device.mobile || window.mobile!;
                     joinMessage.bot = false;
                     joinMessage.loadout = this.m_config.get("loadout")!;
-
                     this.m_sendMessage(net.MsgType.Join, joinMessage, 8192);
                 };
                 this.m_ws.onmessage = (e) => {
@@ -1269,6 +1269,7 @@ export class Game {
                     });
                 }
 
+                SDK.gamePlayStart();
                 break;
             }
             case net.MsgType.Map: {

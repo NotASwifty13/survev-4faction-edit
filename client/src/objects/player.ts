@@ -36,6 +36,7 @@ import type { Camera } from "../camera";
 import type { DebugOptions } from "../config";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
+import { errorLogManager } from "../errorLogs";
 import type { Ctx } from "../game";
 import { helpers } from "../helpers";
 import type { SoundHandle } from "../lib/createJS";
@@ -161,7 +162,7 @@ class Gun {
     }
 }
 
-interface AnimCtx {
+export interface AnimCtx {
     playerBarn: PlayerBarn;
     map: Map;
     audioManager: AudioManager;
@@ -2118,10 +2119,10 @@ export class Player implements AbstractObject {
             for (let i = 0; i < anim.effects.length; i++) {
                 const effect = anim.effects[i];
                 if (effect.time >= ticker && effect.time < f) {
-                    (this[effect.fn as keyof this] as any).apply(this, [
+                    (this[effect.fn] as (ctx: AnimCtx, args: unknown) => void)(
                         AnimCtx,
                         effect.args,
-                    ]);
+                    );
                 }
             }
             if (w) {
@@ -2185,7 +2186,7 @@ export class Player implements AbstractObject {
         }
     }
 
-    animMeleeCollision(animCtx: Partial<AnimCtx>, args: { playerHit: string }) {
+    animMeleeCollision(animCtx: Partial<AnimCtx>, args: { playerHit?: string }) {
         const meleeDef = GameObjectDefs[this.m_netData.m_activeWeapon] as MeleeDef;
         if (meleeDef && meleeDef.type == "melee") {
             const meleeCol = this.getMeleeCollider();
@@ -2297,7 +2298,7 @@ export class Player implements AbstractObject {
                             ((Math.random() - 0.5) * Math.PI) / 3,
                         );
                         const hitSound =
-                            meleeDef.sound[args.playerHit] || meleeDef.sound.playerHit;
+                            meleeDef.sound[args.playerHit!] || meleeDef.sound.playerHit;
                         hits.push({
                             pen: col.pen,
                             prio: teamId == ourTeamId ? 2 : 0,
@@ -2720,7 +2721,7 @@ export class PlayerBarn {
         const playerIds = factionMode ? this.playerIds : team.playerIds;
 
         if (playerIds.length != playerStatus.players.length) {
-            console.error(
+            errorLogManager.logError(
                 `PlayerIds and playerStatus.players out of sync. OurLen: ${playerIds.length} MsgLen: ${playerStatus.players.length} FactionMode: ${factionMode}`,
             );
             return;
@@ -2787,7 +2788,7 @@ export class PlayerBarn {
     updateGroupStatus(groupId: number, groupStatus: { players: GroupStatus[] }) {
         const info = this.getGroupInfo(groupId);
         if (info.playerIds.length != groupStatus.players.length) {
-            console.error("PlayerIds and groupStatus.players out of sync");
+            errorLogManager.logError("PlayerIds and groupStatus.players out of sync");
             return;
         }
         for (let i = 0; i < info.playerIds.length; i++) {

@@ -2,10 +2,11 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
+import { MapId } from "../types/misc";
 import { Main, type PartialMapDef } from "./baseDefs";
 
 const mapDef: PartialMapDef = {
-    mapId: 1,
+    mapId: MapId.Desert,
     desc: {
         name: "Desert",
         icon: "img/loot/loot-weapon-flare-gun.svg",
@@ -22,14 +23,14 @@ const mapDef: PartialMapDef = {
     },
     biome: {
         colors: {
-            background: 6976835,
-            water: 9083726,
-            waterRipple: 13756037,
-            beach: 13206586,
-            riverbank: 11689508,
-            grass: 14657367,
-            underground: 4001027,
-            playerSubmerge: 5151631,
+            background: 0x6a7543,
+            water: 0x8a9b4e,
+            waterRipple: 0xd1e685,
+            beach: 0xc9843a,
+            riverbank: 0xb25e24,
+            grass: 0xdfa757,
+            underground: 0x3d0d03,
+            playerSubmerge: 0x4e9b8f,
             playerGhillie: 0xdfa761,
         },
         particles: {},
@@ -194,18 +195,6 @@ const mapDef: PartialMapDef = {
             { name: "fabricate", count: 1, weight: 1 },
             { name: "flak_jacket", count: 1, weight: 1 },
             { name: "bonus_45", count: 1, weight: 1 },
-        ],
-        tier_eye_stone: [
-            { name: "vector45", count: 1, weight: 1 },
-            { name: "45acp", count: 1, weight: 1 },
-            { name: "garand", count: 1, weight: 1 },
-            { name: "strobe", count: 1, weight: 1 },
-            { name: "healthkit", count: 1, weight: 1 },
-            { name: "painkiller", count: 1, weight: 1 },
-            { name: "m4a1", count: 1, weight: 0.7 },
-            { name: "m249", count: 1, weight: 0.2 },
-            { name: "awc", count: 1, weight: 0.1 },
-            { name: "pkp", count: 1, weight: 0.1 },
         ],
     },
     mapGen: {

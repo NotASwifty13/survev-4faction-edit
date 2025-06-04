@@ -2,10 +2,11 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
+import { MapId } from "../types/misc";
 import { Main, type PartialMapDef } from "./baseDefs";
 
 const mapDef: PartialMapDef = {
-    mapId: 2,
+    mapId: MapId.Woods,
     desc: {
         name: "Woods",
         icon: "img/gui/player-king-woods.svg",
@@ -22,14 +23,14 @@ const mapDef: PartialMapDef = {
     },
     biome: {
         colors: {
-            background: 2118510,
-            water: 3310251,
-            waterRipple: 11792639,
-            beach: 15709019,
-            riverbank: 7812619,
-            grass: 9339690,
-            underground: 1772803,
-            playerSubmerge: 2854052,
+            background: 0x20536e,
+            water: 0x3282ab,
+            waterRipple: 0xb3f0ff,
+            beach: 0xefb35b,
+            riverbank: 0x77360b,
+            grass: 0x8e832a,
+            underground: 0x1b0d03,
+            playerSubmerge: 0x2b8ca4,
         },
         particles: { camera: "falling_leaf" },
     },

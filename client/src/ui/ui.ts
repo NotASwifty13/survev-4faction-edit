@@ -13,6 +13,7 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { AudioManager } from "../audioManager";
 import type { Camera } from "../camera";
 import { device } from "../device";
+import { errorLogManager } from "../errorLogs";
 import type { Game } from "../game";
 import { type Gas, GasRenderer, GasSafeZoneRenderer } from "../gas";
 import { helpers } from "../helpers";
@@ -23,6 +24,7 @@ import { type MapSprite, MapSpriteBarn } from "../objects/mapSprite";
 import type { ParticleBarn } from "../objects/particles";
 import type { PlaneBarn } from "../objects/plane";
 import type { Player, PlayerBarn } from "../objects/player";
+import { SDK } from "../sdk";
 import type { InputBindUi, InputBinds } from "./../inputBinds";
 import type { Localization } from "./localization";
 import { PieTimer } from "./pieTimer";
@@ -358,11 +360,7 @@ export class UiManager {
         });
 
         // Display full screen
-        let showFullScreen = device.os == "ios" ? "none" : "block";
-        if (device.touch) {
-            showFullScreen = "none";
-        }
-        $("#btn-game-fullscreen").css("display", showFullScreen);
+        $("#btn-game-fullscreen").css("display", SDK.isAnySDK ? "none" : "block");
 
         this.resumeButton.on("mousedown", (e) => {
             e.stopPropagation();
@@ -792,7 +790,7 @@ export class UiManager {
                 playing: this.game.m_playingTicker,
                 groupInfo: playerBarn.groupInfo,
             };
-            console.error(`badTeamInfo_1: ${JSON.stringify(err)}`);
+            errorLogManager.logError(`badTeamInfo_1: ${JSON.stringify(err)}`);
         }
 
         const layoutSm = device.uiLayout == device.UiLayout.Sm;
@@ -845,7 +843,8 @@ export class UiManager {
                                 camAabb.min,
                                 camAabb.max,
                             )!;
-                            const rot = Math.atan2(dir.y, -dir.x) + Math.PI * 0.5;
+                            // fixme: find actual cause for the indicator rotation facing backwards
+                            const rot = Math.atan2(dir.y, -dir.x) - Math.PI * 0.5;
                             const screenEdge = camera.m_pointToScreen(edge);
                             const onscreen = coldet.testCircleAabb(
                                 playerPos,
@@ -1280,6 +1279,8 @@ export class UiManager {
     }
 
     removeAds() {
+        SDK.removeAllAds();
+
         if (!window.aiptag) return;
         const ads = ["728x90", "300x250_2"];
         for (let i = 0; i < ads.length; i++) {
@@ -1291,8 +1292,15 @@ export class UiManager {
     }
 
     refreshMainPageAds() {
-        if (!window.aiptag) return;
         const ads = ["728x90"];
+
+        if (SDK.isCrazyGames) {
+            for (let i = 0; i < ads.length; i++) {
+                SDK.requestAd(ads[i]);
+            }
+        }
+
+        if (!window.aiptag) return;
         for (let i = 0; i < ads.length; i++) {
             const ad = ads[i];
             window.aiptag.cmd.display.push(() => {

@@ -136,7 +136,7 @@ export class Projectile extends BaseGameObject {
             this.strobe.strobeTicker -= dt;
 
             if (this.strobe.strobeTicker <= 0) {
-                this.game.playerBarn.addEmote(0, this.pos, "ping_airstrike", true);
+                this.game.playerBarn.addMapPing("ping_airstrike", this.pos);
                 this.game.planeBarn.addAirStrike(this.pos, this.throwDir, this.playerId);
                 this.strobe.airstrikesLeft--;
                 this.strobe.airstrikeTicker = 0.85;
@@ -196,8 +196,7 @@ export class Projectile extends BaseGameObject {
         //
         // Collision and changing layers on stair
         //
-        const coll = collider.createCircle(this.pos, this.rad, this.posZ);
-        const objs = this.game.grid.intersectCollider(coll);
+        const objs = this.game.grid.intersectGameObject(this);
 
         for (const obj of objs) {
             if (
@@ -310,8 +309,7 @@ export class Projectile extends BaseGameObject {
      * only used for bomb_iron projectiles, they CANNOT explode inside indestructable buildings
      */
     canBombIronExplode(): boolean {
-        const coll = collider.createCircle(this.pos, this.rad);
-        const objs = this.game.grid.intersectCollider(coll);
+        const objs = this.game.grid.intersectGameObject(this);
 
         for (const obj of objs) {
             if (obj.__type != ObjectType.Building) continue;
