@@ -687,6 +687,7 @@ export class WeaponManager {
         //
         const hasExplosive = this.player.hasPerk("explosive");
         const hasSplinter = this.player.hasPerk("splinter");
+        const hasApRounds = this.player.hasPerk("ap_rounds");
         const shouldApplyChambered =
             this.player.hasPerk("chambered") &&
             itemDef.ammo !== "12gauge" &&
@@ -788,6 +789,7 @@ export class WeaponManager {
                 trailThick: shouldApplyChambered,
                 reflectCount: 0,
                 splinter: hasSplinter,
+                apRounds: hasApRounds,
                 lastShot: weapon.ammo <= 0,
                 reflectObjId: this.player.obstacleOutfit?.__id,
                 onHitFx: hasExplosive ? "explosion_rounds" : undefined,
